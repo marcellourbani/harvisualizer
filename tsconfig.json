@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/har-parser" },
+    { "path": "packages/har-viewer" },
+    { "path": "packages/vscode-extension" }
+  ]
+}

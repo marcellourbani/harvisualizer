@@ -1,0 +1,118 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "watch:har-parser",
+      "type": "npm",
+      "script": "build:watch",
+      "problemMatcher": {
+        "base": "$tsc-watch",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/packages/har-parser"
+        ]
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/har-parser"
+      }
+    },
+    {
+      "label": "watch:har-viewer-vite",
+      "type": "npm",
+      "script": "dev",
+      "problemMatcher": [
+        {
+          "pattern": [
+            {
+              "regexp": ".",
+              "file": 1,
+              "location": 2,
+              "message": 3
+            }
+          ],
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": ".*build started*",
+            "endsPattern": ".*built in.*"
+          }
+        }
+      ],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/har-viewer"
+      }
+    },
+    {
+      "label": "watch:har-viewer-tsc",
+      "type": "npm",
+      "script": "typecheck:watch",
+      "problemMatcher": {
+        "base": "$tsc-watch",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/packages/har-viewer"
+        ]
+      },
+      "isBackground": true,
+      "group": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/har-viewer"
+      }
+    },
+    {
+      "label": "watch:vscode-extension-tsc",
+      "type": "npm",
+      "script": "watch-ts",
+      "problemMatcher": {
+        "base": "$tsc-watch",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/packages/vscode-extension"
+        ]
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/vscode-extension"
+      }
+    },
+    {
+      "label": "watch:vscode-extension",
+      "type": "npm",
+      "script": "watch",
+      "problemMatcher": {
+        "base": "$esbuild-watch",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/packages/vscode-extension"
+        ]
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "never"
+      },
+      "group": "build",
+      "options": {
+        "cwd": "${workspaceFolder}/packages/vscode-extension"
+      },
+      "dependsOn": [
+        "watch:har-parser",
+        "watch:har-viewer-vite",
+        "watch:har-viewer-tsc",
+        "watch:vscode-extension-tsc"
+      ]
+    }
+  ]
+}

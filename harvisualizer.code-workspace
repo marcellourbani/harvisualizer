@@ -1,0 +1,30 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "harvisualizer (Root)"
+    },
+    {
+      "path": "packages/har-parser",
+      "name": "har-parser"
+    },
+    {
+      "path": "packages/har-viewer",
+      "name": "har-viewer"
+    },
+    {
+      "path": "packages/vscode-extension",
+      "name": "vscode-extension"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "packages": true
+    },
+    "jest.disabledWorkspaceFolders": [
+      "har-viewer",
+      "vscode-extension",
+      "harvisualizer (Root)"
+    ],
+  }
+}

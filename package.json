@@ -1,0 +1,25 @@
+{
+  "name": "harvisualizer",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "description": "This repository contains a VSCode extension for visualizing HAR files.",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "npm test --workspaces",
+    "dev": "npm -w packages/har-parser run build:watch & npm -w packages/har-viewer run dev & npm -w packages/vscode-extension run esbuild",
+    "typecheck": "npx tsc -b"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "overrides": {
+    "@types/react": "18.3.27",
+    "@types/react-dom": "18.3.7"
+  }
+}

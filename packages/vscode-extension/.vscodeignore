@@ -1,0 +1,9 @@
+# Ignore everything
+**
+../**
+node_modules
+
+# Except the following:
+!package.json
+!LICENSE
+!out/

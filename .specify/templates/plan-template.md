@@ -17,12 +17,12 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
+**Language/Version**: [TypeScript (latest), Node.js (LTS)] 
+**Primary Dependencies**: [React (latest)]  
+**Storage**: [N/A for frontend, or specify backend storage]  
+**Testing**: [Jest, React Testing Library]  
+**Target Platform**: [Web (Modern Browsers)]
+**Project Type**: [web]  
 **Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
 **Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+*   [ ] **I. Clarity and Simplicity**: Is the proposed solution unnecessarily complex? Is the code understandable?
+*   [ ] **II. Correctness and Robustness**: Does the plan account for error handling and edge cases?
+*   [ ] **III. Testability**: Is the proposed design testable? Are unit tests planned for all new logic?
+*   [ ] **IV. Modularity**: Does the design promote modularity and separation of concerns?
+*   [ ] **V. User-Centric Design**: Does the plan prioritize a good user experience?
 
 ## Project Structure
 
@@ -56,39 +60,22 @@ specs/[###-feature]/
 -->
 
 ```text
-# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
-src/
-├── models/
-├── services/
-├── cli/
-└── lib/
+# Monorepo Structure
+packages/
+├── har-parser/          # The HAR parsing library
+│   ├── src/
+│   └── tests/
+├── har-viewer/          # The React component for viewing HAR data
+│   ├── src/
+│   │   ├── components/
+│   │   └── hooks/
+│   └── tests/
+└── vscode-extension/    # The VSCode extension
+    ├── src/
+    ├── webviews/
+    └── tests/
 
-tests/
-├── contract/
-├── integration/
-└── unit/
-
-# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
-backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
-
-frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
-
-# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
-api/
-└── [same as backend above]
-
-ios/ or android/
-└── [platform-specific structure: feature modules, UI flows, platform tests]
+tests/                   # Root-level integration/e2e tests (if applicable)
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real

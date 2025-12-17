@@ -1,0 +1,232 @@
+.har-viewer-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  /* Full viewport height */
+  font-family: sans-serif;
+}
+
+/* Default/Light theme variables */
+.har-viewer-container {
+  --har-viewer-text-color: var(--vscode-editor-foreground);
+  --har-viewer-background-color: var(--vscode-editor-background);
+  --har-viewer-border-color: var(--vscode-editorGroup-border);
+  --har-viewer-input-bg: var(--vscode-input-background);
+  --har-viewer-input-border: var(--vscode-input-border);
+  --har-viewer-input-color: var(--vscode-input-foreground);
+  --har-viewer-list-hover-bg: var(--vscode-list-hoverBackground);
+
+  /* Method Colors (Default/Light Base) */
+  --har-method-get-bg: #28a745;
+  --har-method-get-color: #ffffff;
+  --har-method-delete-bg: #dc3545;
+  --har-method-delete-color: #ffffff;
+  --har-method-other-bg: #ffc107;
+  --har-method-other-color: #000000;
+  --har-error-bg-odd: rgba(255, 0, 0, 0.08);
+  --har-error-bg-even: rgba(255, 0, 0, 0.15);
+  --har-redirect-bg-odd: rgba(255, 193, 7, 0.08);
+  --har-redirect-bg-even: rgba(255, 193, 7, 0.15);
+}
+
+/* Dark theme specific variables */
+.har-viewer-container.vscode-dark {
+  /* VSCode dark theme already sets these, but explicit definition helps clarity */
+  --har-viewer-text-color: var(--vscode-editor-foreground);
+  --har-viewer-background-color: var(--vscode-editor-background);
+  --har-viewer-border-color: var(--vscode-editorGroup-border);
+  --har-viewer-input-bg: var(--vscode-input-background);
+  --har-viewer-input-border: var(--vscode-input-border);
+  --har-viewer-input-color: var(--vscode-input-foreground);
+  --har-viewer-input-color: var(--vscode-input-foreground);
+  --har-viewer-list-hover-bg: var(--vscode-list-hoverBackground);
+  --har-viewer-row-even-bg: rgba(255, 255, 255, 0.05);
+  /* Lighten slightly on dark bg */
+  --har-viewer-row-odd-bg: transparent;
+  --har-viewer-selection-bg: var(--vscode-list-activeSelectionBackground);
+  --har-viewer-selection-color: var(--vscode-list-activeSelectionForeground);
+
+  /* Method Colors (Dark) */
+  --har-method-get-bg: #2da042;
+  --har-method-get-color: #ffffff;
+  --har-method-delete-bg: #d73a49;
+  --har-method-delete-color: #ffffff;
+  --har-method-other-bg: #dbab09;
+  --har-method-other-color: #000000;
+  --har-error-bg-odd: rgba(255, 0, 0, 0.2);
+  --har-error-bg-even: rgba(255, 0, 0, 0.3);
+  --har-redirect-bg-odd: rgba(219, 171, 9, 0.2);
+  --har-redirect-bg-even: rgba(219, 171, 9, 0.3);
+}
+
+/* Fallback for light theme (if VSCode variables are not set or for standalone use) */
+.har-viewer-container.vscode-light {
+  --har-viewer-text-color: #333;
+  --har-viewer-background-color: #fff;
+  --har-viewer-border-color: #eee;
+  --har-viewer-input-bg: #f3f3f3;
+  --har-viewer-input-border: #ccc;
+  --har-viewer-input-color: #333;
+  --har-viewer-list-hover-bg: #e0e0e0;
+  --har-viewer-row-even-bg: rgba(0, 0, 0, 0.05);
+  /* Darken slightly on light bg */
+  --har-viewer-row-odd-bg: transparent;
+  --har-viewer-selection-bg: #007fd4;
+  --har-viewer-selection-color: #ffffff;
+}
+
+/* Apply variables */
+.har-viewer-container {
+  color: var(--har-viewer-text-color);
+  background-color: var(--har-viewer-background-color);
+}
+
+.har-viewer-controls {
+  padding: 10px;
+  border-bottom: 1px solid var(--har-viewer-border-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  /* Fixed header */
+}
+
+.har-viewer-controls h1 {
+  font-size: 1.5em;
+  margin: 0;
+  color: var(--har-viewer-text-color);
+}
+
+.har-viewer-controls select,
+.har-viewer-controls input[type="text"] {
+  padding: 5px;
+  border: 1px solid var(--har-viewer-input-border);
+  background-color: var(--har-viewer-input-bg);
+  color: var(--har-viewer-input-color);
+  border-radius: 3px;
+}
+
+.har-viewer-content {
+  display: flex;
+  flex-grow: 1;
+  /* Allows content to take remaining height */
+  overflow: hidden;
+  /* Prevent container itself from scrolling */
+  min-height: 0;
+  /* Crucial for nested flex scrolling */
+}
+
+.har-viewer-list-pane {
+  flex: 1;
+  /* Takes 1 part of available space */
+  overflow-y: auto;
+  /* Scroll for list */
+  border-right: 1px solid var(--har-viewer-border-color);
+  padding: 10px;
+}
+
+.har-viewer-detail-pane {
+  flex: 2;
+  /* Takes 2 parts of available space */
+  overflow-y: auto;
+  /* Scroll for details */
+  padding: 10px;
+}
+
+.har-viewer-list-pane div,
+.har-viewer-detail-pane div {
+  /* Basic styling for list items and details */
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+
+
+.har-viewer-list-pane div span {
+  margin-right: 10px;
+}
+
+.har-entry-row {
+  cursor: pointer;
+  /* Ensure padding and border logic matches earlier generic div rule if replacing it, 
+       but specifically targeting class is better */
+}
+
+/* Alternating background colors */
+/* Alternating background colors */
+.har-viewer-list-pane .har-entry-row:nth-child(even) {
+  background-color: var(--har-viewer-row-even-bg, rgba(0, 0, 0, 0.03));
+}
+
+.har-viewer-list-pane .har-entry-row:nth-child(odd) {
+  background-color: var(--har-viewer-row-odd-bg, transparent);
+}
+
+/* Hover effect - only on the row under mouse */
+.har-viewer-list-pane .har-entry-row:hover {
+  background-color: var(--har-viewer-list-hover-bg) !important;
+}
+
+/* Selected state */
+.har-viewer-list-pane .har-entry-row.selected {
+  background-color: var(--har-viewer-selection-bg, #007fd4) !important;
+  color: var(--har-viewer-selection-color, #ffffff);
+}
+
+/* Method Badges */
+.method-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-align: center;
+  min-width: 60px;
+  line-height: normal;
+}
+
+.method-get {
+  background-color: var(--har-method-get-bg);
+  color: var(--har-method-get-color);
+}
+
+.method-delete {
+  background-color: var(--har-method-delete-bg);
+  color: var(--har-method-delete-color);
+}
+
+.method-other {
+  background-color: var(--har-method-other-bg);
+  color: var(--har-method-other-color);
+}
+
+.har-viewer-list-pane .har-entry-row {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  /* Slightly more comfortable padding */
+}
+
+/* Error Rows - Respecting alternate line and hover/selection */
+/* Odd Error Rows */
+.har-viewer-list-pane .har-entry-row.error:nth-child(odd) {
+  background-color: var(--har-error-bg-odd);
+}
+
+/* Even Error Rows */
+.har-viewer-list-pane .har-entry-row.error:nth-child(even) {
+  background-color: var(--har-error-bg-even);
+}
+
+/* Redirect Rows (3xx) */
+.har-viewer-list-pane .har-entry-row.redirect:nth-child(odd) {
+  background-color: var(--har-redirect-bg-odd);
+}
+
+.har-viewer-list-pane .har-entry-row.redirect:nth-child(even) {
+  background-color: var(--har-redirect-bg-even);
+}
+
+/* Hover and Selection (ensure they override error bg via cascade or specificity) */
+/* Already have !important in existing hover/selection rules, so we are safe. */

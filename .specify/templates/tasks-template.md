@@ -20,10 +20,8 @@ description: "Task list template for feature implementation"
 
 ## Path Conventions
 
-- **Single project**: `src/`, `tests/` at repository root
-- **Web app**: `backend/src/`, `frontend/src/`
-- **Mobile**: `api/src/`, `ios/src/` or `android/src/`
-- Paths shown below assume single project - adjust based on plan.md structure
+- **Monorepo**: All paths are relative to the specific package directory (e.g., `packages/har-parser/src/`, `packages/har-viewer/tests/`, `packages/vscode-extension/src/`).
+- Use explicit package prefixes when referring to files outside the current package (e.g., `packages/har-parser/src/parser.ts` from `har-viewer`).
 
 <!-- 
   ============================================================================
