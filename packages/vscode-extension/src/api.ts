@@ -132,15 +132,19 @@ export class HarRecorder implements HarRecorderAPI {
     // Store the call
     registration.calls.push(entry);
 
-    // Log to output channel
+    // Log to output channel with clickable file link
     const timestamp = new Date(entry.startedDateTime).toISOString();
     const method = entry.request.method;
     const url = entry.request.url;
     const status = entry.response.status;
     const callIndex = registration.calls.length - 1;
 
+    // Create a clickable link to the JSONC file
+    // Format: [timestamp] METHOD url - status (call:index) [file path]
+    const filePath = registration.storageFileUri.fsPath;
+
     registration.outputChannel.appendLine(
-      `[${timestamp}] ${method} ${url} - ${status} (call:${callIndex})`
+      `[${timestamp}] ${method} ${url} - ${status} (call:${callIndex}) ${filePath}`
     );
 
     // Persist to JSONC file asynchronously

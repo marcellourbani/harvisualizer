@@ -20,6 +20,16 @@ const harViewerResolvePlugin = {
   },
 };
 
+const harParserResolvePlugin = {
+  name: "har-parser-resolve",
+  setup(build) {
+    build.onResolve({ filter: /^har-parser$/ }, args => {
+      // Resolve to built output
+      return { path: path.resolve(__dirname, '../har-parser/dist/index.js') };
+    });
+  },
+};
+
 async function build() {
   try {
     // ESBuild context for the main extension
@@ -32,6 +42,7 @@ async function build() {
       sourcemap: true,
       external: ["vscode"], // The 'vscode' module is provided by VS Code, so it must be excluded
       logLevel: "info",
+      plugins: [harParserResolvePlugin],
     });
 
     // ESBuild context for the webview

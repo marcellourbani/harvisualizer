@@ -49,6 +49,9 @@
         "selector": [
           {
             "filenamePattern": "*.har"
+          },
+          {
+            "filenamePattern": "**/har-recordings-*.jsonc"
           }
         ],
         "priority": "default"

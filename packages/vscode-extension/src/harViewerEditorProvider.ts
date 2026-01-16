@@ -6,9 +6,10 @@ import { HarEntry } from 'har-parser'; // Import HarEntry directly from har-pars
 
 
 interface WebviewMessage {
-  command: 'ready' | 'selectEntry' | 'loadData' | 'updateData' | 'themeChanged';
+  command: 'ready' | 'selectEntry' | 'loadData' | 'updateData' | 'themeChanged' | 'selectCall';
   data?: HarData | Theme;
   entry?: HarEntry; // Still HarEntry as it's the specific entry selected
+  callIndex?: number; // Call index for selection
 }
 
 function getNonce() {
@@ -98,12 +99,27 @@ export class HarViewerEditorProvider implements vscode.CustomEditorProvider {
     webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview);
 
     const sendHarDataToWebview = async () => {
-      const harContent = (await vscode.workspace.fs.readFile(document.uri)).toString();
+      // Strip fragment from URI when reading the file
+      const fileUri = document.uri.with({ fragment: '' });
+      const harContent = (await vscode.workspace.fs.readFile(fileUri)).toString();
       const entries = await parseHar(harContent);
       communicationProvider.postMessage({
         command: 'loadData',
         data: { entries: entries }
       });
+
+      // Check if there's a call index in the fragment
+      const fragment = document.uri.fragment;
+      if (fragment && fragment.startsWith('call:')) {
+        const callIndex = parseInt(fragment.substring(5), 10);
+        if (!isNaN(callIndex)) {
+          // Send a message to select the specific call
+          communicationProvider.postMessage({
+            command: 'selectCall',
+            callIndex: callIndex
+          });
+        }
+      }
     };
 
     const sendThemeToWebview = () => {

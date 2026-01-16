@@ -18,6 +18,27 @@ export function activate(context: vscode.ExtensionContext): HarRecorderAPI {
     dispose: () => harRecorder.dispose()
   });
 
+  // Register command to open a specific call from output channel
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'harvisualizer.openCall',
+      async (fileUri: vscode.Uri, callIndex: number) => {
+        try {
+          // Create a URI with a fragment to indicate the call index
+          // The fragment will be picked up by the custom editor
+          const uriWithFragment = fileUri.with({ fragment: `call:${callIndex}` });
+
+          // Open the JSONC file with the custom editor
+          await vscode.commands.executeCommand('vscode.openWith', uriWithFragment, 'harvisualizer.harViewer');
+
+          console.log(`Opened HAR file ${fileUri.toString()} for call index ${callIndex}`);
+        } catch (error) {
+          vscode.window.showErrorMessage(`Failed to open HAR call: ${error}`);
+        }
+      }
+    )
+  );
+
   // Return API for other extensions to use
   return harRecorder;
 }
