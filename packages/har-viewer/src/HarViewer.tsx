@@ -29,8 +29,8 @@ const HarViewer: React.FC<HarViewerProps> = ({ communicationProvider }) => {
 
   useEffect(() => {
     const unsubscribe = communicationProvider.onMessage(message => {
-      if (message.command === 'loadData' || message.command === 'updateData') {
-        // Type guard to check if message.data is HarData
+      if (message.command === 'loadData') {
+        // Full load: replace all entries
         if ('entries' in message.data) {
           const entriesWithIds = message.data.entries.map((entry, index) => ({
             ...entry,
@@ -38,6 +38,16 @@ const HarViewer: React.FC<HarViewerProps> = ({ communicationProvider }) => {
           }));
           setAllHarEntries(entriesWithIds);
           setSelectedEntryId(null);
+        }
+      } else if (message.command === 'updateData') {
+        // Incremental update: append new entries, preserve selection
+        if ('entries' in message.data) {
+          const entriesWithIds = message.data.entries.map((entry, index) => ({
+            ...entry,
+            id: (entry as any).id || crypto.randomUUID(), // Assign a unique ID
+          }));
+          setAllHarEntries(prev => [...prev, ...entriesWithIds]);
+          // Keep the current selection (don't reset selectedEntryId)
         }
       } else if (message.command === 'themeChanged') {
         // Type guard to check if message.data is Theme
