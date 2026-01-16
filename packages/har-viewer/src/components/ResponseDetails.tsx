@@ -1,5 +1,6 @@
 import React from 'react';
 import { HarEntry } from 'har-parser';
+import '@vscode-elements/elements/dist/vscode-badge';
 
 interface ResponseDetailsProps {
   response: HarEntry['response']; // Full HAR Response object
@@ -9,13 +10,13 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({ response }) => {
   if (!response) {
     return <p>No response details available.</p>;
   }
-  const statusClass = getStatusClass(response.status);
+  const statusVariant: 'success' | 'note' | 'danger' = getStatusVariant(response.status);
 
   return (
     <div>
       <h3>Response</h3>
       <p>
-        <strong>Status:</strong> <span className={`method-badge ${statusClass}`}>{response.status} {response.statusText}</span>
+        <strong>Status:</strong> <vscode-badge variant={statusVariant}>{response.status} {response.statusText}</vscode-badge>
       </p>
       <p>HTTP Version: {response.httpVersion}</p>
       {response.content && response.content.text && (
@@ -30,10 +31,10 @@ const ResponseDetails: React.FC<ResponseDetailsProps> = ({ response }) => {
   );
 };
 
-const getStatusClass = (status: number): string => {
-  if (status >= 200 && status < 300) return 'method-get'; // Success / Green
-  if (status >= 300 && status < 400) return 'method-other'; // Redirect / Yellow
-  return 'method-delete'; // Error / Red (>= 400, or < 200)
+const getStatusVariant = (status: number): 'success' | 'note' | 'danger' => {
+  if (status >= 200 && status < 300) return 'success'; // Success / Green
+  if (status >= 300 && status < 400) return 'note'; // Redirect / Blue
+  return 'danger'; // Error / Red (>= 400, or < 200)
 };
 
 export default ResponseDetails;

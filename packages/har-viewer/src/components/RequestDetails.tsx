@@ -1,5 +1,6 @@
 import React from 'react';
 import { HarEntry } from 'har-parser';
+import '@vscode-elements/elements/dist/vscode-badge';
 
 interface RequestDetailsProps {
   request: HarEntry['request']; // Full HAR Request object
@@ -9,13 +10,13 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ request }) => {
   if (!request) {
     return <p>No request details available.</p>;
   }
-  const methodClass = getMethodClass(request.method);
+  const methodVariant: 'success' | 'danger' | 'note' | 'default' = getMethodVariant(request.method);
 
   return (
     <div>
       <h3>Request</h3>
       <p>
-        <strong>Method:</strong> <span className={`method-badge ${methodClass}`}>{request.method}</span>
+        <strong>Method:</strong> <vscode-badge variant={methodVariant}>{request.method}</vscode-badge>
       </p>
       <p>URL: {request.url}</p>
       <p>HTTP Version: {request.httpVersion}</p>
@@ -30,11 +31,12 @@ const RequestDetails: React.FC<RequestDetailsProps> = ({ request }) => {
   );
 };
 
-const getMethodClass = (method: string): string => {
+const getMethodVariant = (method: string): 'success' | 'danger' | 'note' | 'default' => {
   const m = method.toUpperCase();
-  if (m === 'GET') return 'method-get';
-  if (m === 'DELETE') return 'method-delete';
-  return 'method-other';
+  if (m === 'GET') return 'success';
+  if (m === 'DELETE') return 'danger';
+  if (m === 'POST' || m === 'PUT' || m === 'PATCH') return 'note';
+  return 'default';
 };
 
 export default RequestDetails;

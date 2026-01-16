@@ -99,7 +99,8 @@ describe("DetailPane", () => {
 
     // Request Details
     expect(screen.getByText("Request")).toBeInTheDocument()
-    expect(screen.getByText(/Method: GET/i)).toBeInTheDocument()
+    expect(screen.getByText("Method:")).toBeInTheDocument()
+    expect(screen.getByText("GET")).toBeInTheDocument()
     expect(
       screen.getByText(/URL: http:\/\/example.com\/api\/data/i)
     ).toBeInTheDocument()
@@ -113,7 +114,8 @@ describe("DetailPane", () => {
 
     // Response Details
     expect(screen.getByText("Response")).toBeInTheDocument()
-    expect(screen.getByText(/Status: 200 OK/i)).toBeInTheDocument()
+    expect(screen.getByText("Status:")).toBeInTheDocument()
+    expect(screen.getByText(/200 OK/i)).toBeInTheDocument()
     // Use getAllByText for non-unique elements
     const responseHttpVersion = screen.getAllByText(
       /HTTP Version: HTTP\/1\.1/i
