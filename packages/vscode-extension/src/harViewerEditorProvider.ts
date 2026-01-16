@@ -97,6 +97,9 @@ export class HarViewerEditorProvider implements vscode.CustomEditorProvider {
 
     webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview);
 
+    // Track the number of entries we've already sent to detect incremental updates
+    let lastEntryCount = 0;
+
     const sendHarDataToWebview = async () => {
       const fileExtension = document.uri.fsPath.split('.').pop()?.toLowerCase();
 
@@ -145,6 +148,26 @@ export class HarViewerEditorProvider implements vscode.CustomEditorProvider {
           command: 'loadData',
           data: { entries: entries }
         });
+        lastEntryCount = entries.length;
+      }
+    };
+
+    const checkForNewEntries = async () => {
+      try {
+        const harContent = (await vscode.workspace.fs.readFile(document.uri)).toString();
+        const entries = await parseHar(harContent);
+
+        // If we have new entries, send only the incremental ones
+        if (entries.length > lastEntryCount) {
+          const newEntries = entries.slice(lastEntryCount);
+          communicationProvider.postMessage({
+            command: 'updateData',
+            data: { entries: newEntries }
+          });
+          lastEntryCount = entries.length;
+        }
+      } catch (error) {
+        console.error('Error checking for new HAR entries:', error);
       }
     };
 
@@ -158,10 +181,26 @@ export class HarViewerEditorProvider implements vscode.CustomEditorProvider {
 
     sendThemeToWebview();
 
+    // Set up file watcher for live updates
+    const fileWatcher = vscode.workspace.createFileSystemWatcher(
+      document.uri.fsPath
+    );
+
+    fileWatcher.onDidChange(() => {
+      console.log('HAR file changed, checking for new entries:', document.uri.toString());
+      checkForNewEntries();
+    });
+
+    // Clean up watcher when panel is disposed
+    webviewPanel.onDidDispose(() => {
+      fileWatcher.dispose();
+    });
+
     this.context.subscriptions.push(
       vscode.window.onDidChangeActiveColorTheme(() => {
         sendThemeToWebview();
-      })
+      }),
+      fileWatcher
     );
 
     communicationProvider.onMessageFromWebview((message: WebviewMessage) => {
