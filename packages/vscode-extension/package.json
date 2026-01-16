@@ -53,6 +53,29 @@
         ],
         "priority": "default"
       }
+    ],
+    "configuration": {
+      "title": "HAR Visualizer",
+      "properties": {
+        "harvisualizer.recordingRetentionDays": {
+          "type": "number",
+          "default": 7,
+          "minimum": 1,
+          "description": "Number of days to retain recorded HAR call files before automatic deletion"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "harvisualizer.manageRecordings",
+        "title": "Manage Recording Files",
+        "category": "HAR Visualizer"
+      },
+      {
+        "command": "harvisualizer.cleanupExpiredRecordings",
+        "title": "Delete Expired Recording Files",
+        "category": "HAR Visualizer"
+      }
     ]
   }
 }

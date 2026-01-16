@@ -200,4 +200,93 @@ export class RecordingManager {
       return [];
     }
   }
+
+  /**
+   * Get file statistics for a recording file
+   */
+  async getRecordingFileStats(extensionId: string): Promise<{ size: number; created: number; modified: number } | null> {
+    const filePath = this.getRecordingFilePath(extensionId);
+
+    try {
+      const stat = await vscode.workspace.fs.stat(filePath);
+      return {
+        size: stat.size,
+        created: stat.ctime,
+        modified: stat.mtime
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * List all recording files with metadata
+   */
+  async listRecordingFiles(): Promise<Array<{
+    extensionId: string;
+    filePath: vscode.Uri;
+    size: number;
+    created: Date;
+    modified: Date;
+    callCount: number;
+  }>> {
+    const extensionIds = await this.listRecordedExtensions();
+    const files = [];
+
+    for (const extensionId of extensionIds) {
+      const stats = await this.getRecordingFileStats(extensionId);
+      if (stats) {
+        const recordingFile = await this.readRecordingFile(extensionId);
+        files.push({
+          extensionId,
+          filePath: this.getRecordingFilePath(extensionId),
+          size: stats.size,
+          created: new Date(stats.created),
+          modified: new Date(stats.modified),
+          callCount: recordingFile.calls.length
+        });
+      }
+    }
+
+    return files;
+  }
+
+  /**
+   * Delete a specific recording file
+   */
+  async deleteRecordingFile(extensionId: string): Promise<void> {
+    await this.clearCalls(extensionId);
+  }
+
+  /**
+   * Get expired recording files based on retention period (in days)
+   */
+  async getExpiredRecordingFiles(retentionDays: number): Promise<string[]> {
+    const files = await this.listRecordingFiles();
+    const now = Date.now();
+    const retentionMs = retentionDays * 24 * 60 * 60 * 1000;
+    const expired: string[] = [];
+
+    for (const file of files) {
+      const age = now - file.modified.getTime();
+      if (age > retentionMs) {
+        expired.push(file.extensionId);
+      }
+    }
+
+    return expired;
+  }
+
+  /**
+   * Delete expired recording files based on retention period (in days)
+   */
+  async deleteExpiredRecordingFiles(retentionDays: number): Promise<string[]> {
+    const expiredIds = await this.getExpiredRecordingFiles(retentionDays);
+
+    for (const extensionId of expiredIds) {
+      await this.deleteRecordingFile(extensionId);
+    }
+
+    return expiredIds;
+  }
 }
