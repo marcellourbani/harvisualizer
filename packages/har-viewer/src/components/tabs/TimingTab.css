@@ -1,0 +1,101 @@
+.timing-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.timing-tab section {
+  border-bottom: 1px solid var(--har-viewer-border-color);
+  padding-bottom: 15px;
+}
+
+.timing-tab section:last-child {
+  border-bottom: none;
+}
+
+.timing-tab h3 {
+  margin: 0 0 10px 0;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.timing-info .info-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  font-size: 0.9em;
+  margin-bottom: 8px;
+}
+
+.timing-info .info-label {
+  font-weight: 600;
+}
+
+.timing-visualization {
+  margin-top: 15px;
+}
+
+.timing-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timing-bar-wrapper {
+  display: grid;
+  grid-template-columns: 150px 1fr 100px;
+  gap: 10px;
+  align-items: center;
+}
+
+.timing-label {
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.timing-bar-track {
+  background-color: var(--har-viewer-input-bg);
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--har-viewer-input-border);
+}
+
+.timing-bar {
+  height: 100%;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  color: white;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.timing-value {
+  font-size: 0.9em;
+  text-align: right;
+  font-weight: 500;
+}
+
+.timing-details .timing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timing-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 10px;
+  font-size: 0.9em;
+}
+
+.timing-name {
+  font-weight: 500;
+}
+
+.timing-val {
+  color: var(--har-viewer-text-color);
+  opacity: 0.85;
+}
