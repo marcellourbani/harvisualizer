@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { parseHar } from 'har-parser';
+import { parseHar, parseJsonlStream, HarEntry } from 'har-parser';
 import { VSCodeCommunicationProvider } from './communication/VSCodeCommunicationProvider';
 import { Theme, HarData } from 'har-viewer/communication/CommunicationProvider';
-import { HarEntry } from 'har-parser'; // Import HarEntry directly from har-parser
+import { Readable } from 'stream';
 
 
 interface WebviewMessage {
@@ -98,12 +98,54 @@ export class HarViewerEditorProvider implements vscode.CustomEditorProvider {
     webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview);
 
     const sendHarDataToWebview = async () => {
-      const harContent = (await vscode.workspace.fs.readFile(document.uri)).toString();
-      const entries = await parseHar(harContent);
-      communicationProvider.postMessage({
-        command: 'loadData',
-        data: { entries: entries }
-      });
+      const fileExtension = document.uri.fsPath.split('.').pop()?.toLowerCase();
+
+      if (fileExtension === 'jsonl') {
+        // Use streaming parser for JSONL files
+        const fileContent = await vscode.workspace.fs.readFile(document.uri);
+        const stream = Readable.from(Buffer.from(fileContent));
+        const entryStream = parseJsonlStream(stream, { logErrors: true, skipMalformed: true });
+
+        const batchSize = 100;
+        let batch: HarEntry[] = [];
+        let isFirstBatch = true;
+
+        entryStream.on('data', (entry: HarEntry) => {
+          batch.push(entry);
+
+          if (batch.length >= batchSize) {
+            communicationProvider.postMessage({
+              command: isFirstBatch ? 'loadData' : 'updateData',
+              data: { entries: batch }
+            });
+            batch = [];
+            isFirstBatch = false;
+          }
+        });
+
+        entryStream.on('end', () => {
+          // Send any remaining entries in the batch
+          if (batch.length > 0) {
+            communicationProvider.postMessage({
+              command: isFirstBatch ? 'loadData' : 'updateData',
+              data: { entries: batch }
+            });
+          }
+        });
+
+        entryStream.on('error', (error) => {
+          console.error('[HarViewer] Error parsing JSONL file:', error);
+          vscode.window.showErrorMessage(`Error parsing JSONL file: ${error.message}`);
+        });
+      } else {
+        // Use regular parser for HAR files
+        const harContent = (await vscode.workspace.fs.readFile(document.uri)).toString();
+        const entries = await parseHar(harContent);
+        communicationProvider.postMessage({
+          command: 'loadData',
+          data: { entries: entries }
+        });
+      }
     };
 
     const sendThemeToWebview = () => {

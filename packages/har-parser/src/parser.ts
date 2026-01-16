@@ -4,6 +4,7 @@ import { streamArray } from 'stream-json/streamers/StreamArray';
 import { Readable, Transform } from 'stream';
 import { chain } from 'stream-chain';
 import { pick } from 'stream-json/filters/Pick';
+import * as readline from 'readline';
 
 /**
  * Parses a HAR content string and extracts log.entries using Zod for validation.
@@ -86,6 +87,107 @@ export function parseHarStream(
   } catch (err) {
     if (logErrors) {
       console.error("[HarParser] Critical error setting up stream parsing pipeline:", err);
+    }
+    outputStream.emit('error', err);
+  }
+
+  return outputStream;
+}
+
+/**
+ * Parses a JSONL (JSON Lines) stream where each line contains a HAR-shaped structure.
+ * Each line is expected to have the shape of a HAR file with log.entries.
+ *
+ * @param jsonlStream The JSONL content as a Readable stream.
+ * @param options Options for parsing, including whether to log errors and skip malformed lines.
+ * @returns A Readable stream that emits HarEntry objects.
+ */
+export function parseJsonlStream(
+  jsonlStream: Readable,
+  options: { logErrors?: boolean; skipMalformed?: boolean } = {}
+): Readable {
+  const { logErrors = true, skipMalformed = true } = options;
+  const outputStream = new Transform({ objectMode: true });
+
+  let lineNumber = 0;
+  let hasError = false;
+
+  try {
+    const rl = readline.createInterface({
+      input: jsonlStream,
+      crlfDelay: Infinity
+    });
+
+    rl.on('line', (line) => {
+      lineNumber++;
+
+      // Skip empty lines
+      if (!line.trim()) {
+        return;
+      }
+
+      try {
+        // Parse line as JSON
+        const lineObject = JSON.parse(line);
+
+        // Validate it's a HAR structure
+        const validatedHar = HarSchema.parse(lineObject);
+
+        // Extract and emit each entry from this line
+        for (const entry of validatedHar.log.entries) {
+          try {
+            const validatedEntry = HarEntrySchema.parse(entry);
+            outputStream.push(validatedEntry);
+          } catch (entryValidationError) {
+            if (logErrors) {
+              console.error(`[HarParser] Entry validation error on line ${lineNumber}:`, entryValidationError);
+            }
+            if (!skipMalformed) {
+              hasError = true;
+              outputStream.emit('error', new Error(`HAR entry failed validation on line ${lineNumber}`));
+              rl.close();
+              return;
+            }
+          }
+        }
+      } catch (lineError) {
+        if (logErrors) {
+          console.error(`[HarParser] Error parsing JSONL line ${lineNumber}:`, lineError);
+          console.error(`[HarParser] Line content: ${line.substring(0, 100)}...`);
+        }
+        if (!skipMalformed) {
+          hasError = true;
+          outputStream.emit('error', new Error(`Invalid JSON or HAR structure on line ${lineNumber}`));
+          rl.close();
+          return;
+        }
+      }
+    });
+
+    rl.on('close', () => {
+      if (!hasError) {
+        outputStream.end();
+      }
+    });
+
+    rl.on('error', (err) => {
+      if (logErrors) {
+        console.error('[HarParser] Error reading JSONL stream:', err);
+      }
+      outputStream.emit('error', err);
+    });
+
+    jsonlStream.on('error', (err) => {
+      if (logErrors) {
+        console.error('[HarParser] Input stream error:', err);
+      }
+      outputStream.emit('error', err);
+      rl.close();
+    });
+
+  } catch (err) {
+    if (logErrors) {
+      console.error('[HarParser] Critical error setting up JSONL parsing:', err);
     }
     outputStream.emit('error', err);
   }

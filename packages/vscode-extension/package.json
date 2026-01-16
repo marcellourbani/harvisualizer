@@ -49,6 +49,9 @@
         "selector": [
           {
             "filenamePattern": "*.har"
+          },
+          {
+            "filenamePattern": "*.jsonl"
           }
         ],
         "priority": "default"
