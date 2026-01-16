@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+const CookieSchema = z.object({
+  name: z.string(),
+  value: z.string(),
+  path: z.string().optional(),
+  domain: z.string().optional(),
+  expires: z.string().optional(),
+  httpOnly: z.boolean().optional(),
+  secure: z.boolean().optional(),
+  sameSite: z.string().optional(),
+});
+
 const HarEntrySchema = z.object({
   startedDateTime: z.string().datetime(),
   time: z.number(),
@@ -9,17 +20,17 @@ const HarEntrySchema = z.object({
     httpVersion: z.string(),
     headers: z.array(z.object({ name: z.string(), value: z.string() })),
     queryString: z.array(z.object({ name: z.string(), value: z.string() })),
-    cookies: z.array(z.object({ name: z.string(), value: z.string() })),
+    cookies: z.array(CookieSchema),
     headersSize: z.number(),
     bodySize: z.number(),
-    postData: z.any().optional(), 
+    postData: z.any().optional(),
   }),
   response: z.object({
     status: z.number(),
     statusText: z.string(),
     httpVersion: z.string(),
     headers: z.array(z.object({ name: z.string(), value: z.string() })),
-    cookies: z.array(z.object({ name: z.string(), value: z.string() })),
+    cookies: z.array(CookieSchema),
     content: z.object({
       size: z.number(),
       mimeType: z.string(),
@@ -30,11 +41,12 @@ const HarEntrySchema = z.object({
     headersSize: z.number(),
     bodySize: z.number(),
   }),
-  cache: z.any(), 
+  cache: z.any(),
   timings: z.object({
     blocked: z.number().optional(),
     dns: z.number().optional(),
     connect: z.number().optional(),
+    ssl: z.number().optional(),
     send: z.number(),
     wait: z.number(),
     receive: z.number(),

@@ -1,0 +1,40 @@
+.preview-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preview-tab h3 {
+  margin: 0 0 10px 0;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.json-preview,
+.text-preview {
+  background-color: var(--har-viewer-input-bg);
+  border: 1px solid var(--har-viewer-input-border);
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 0.85em;
+  color: var(--har-viewer-text-color);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 600px;
+}
+
+.image-preview {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--har-viewer-border-color);
+  border-radius: 4px;
+}
+
+.html-preview {
+  width: 100%;
+  min-height: 400px;
+  border: 1px solid var(--har-viewer-border-color);
+  border-radius: 4px;
+  background-color: white;
+}

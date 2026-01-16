@@ -1,0 +1,43 @@
+.response-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.response-tab h3 {
+  margin: 0;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.response-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--har-viewer-border-color);
+}
+
+.response-info .info-row {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 10px;
+  font-size: 0.9em;
+}
+
+.response-info .info-label {
+  font-weight: 600;
+}
+
+.response-body {
+  background-color: var(--har-viewer-input-bg);
+  border: 1px solid var(--har-viewer-input-border);
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 0.85em;
+  color: var(--har-viewer-text-color);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 600px;
+}

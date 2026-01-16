@@ -1,0 +1,123 @@
+.headers-payload-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-section {
+  border-bottom: 1px solid var(--har-viewer-border-color);
+  padding-bottom: 15px;
+}
+
+.info-section:last-child {
+  border-bottom: none;
+}
+
+.info-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--har-viewer-text-color);
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 10px;
+  font-size: 0.9em;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--har-viewer-text-color);
+}
+
+.info-value {
+  word-break: break-all;
+  color: var(--har-viewer-text-color);
+}
+
+.headers-list,
+.params-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9em;
+}
+
+.header-row,
+.param-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.header-name,
+.param-name {
+  font-weight: 500;
+  color: var(--har-viewer-text-color);
+}
+
+.header-value,
+.param-value {
+  word-break: break-all;
+  color: var(--har-viewer-text-color);
+  opacity: 0.85;
+}
+
+.payload-text {
+  background-color: var(--har-viewer-input-bg);
+  border: 1px solid var(--har-viewer-input-border);
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.85em;
+  color: var(--har-viewer-text-color);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.method-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.method-get {
+  background-color: var(--har-method-get-bg);
+  color: var(--har-method-get-color);
+}
+
+.method-post {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.method-put {
+  background-color: #ffc107;
+  color: #000000;
+}
+
+.method-delete {
+  background-color: var(--har-method-delete-bg);
+  color: var(--har-method-delete-color);
+}
+
+.method-patch {
+  background-color: #6c757d;
+  color: #ffffff;
+}
+
+.method-other {
+  background-color: var(--har-method-other-bg);
+  color: var(--har-method-other-color);
+}
