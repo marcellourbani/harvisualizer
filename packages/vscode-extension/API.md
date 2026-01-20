@@ -26,7 +26,7 @@ First, obtain the API from the HAR Visualizer extension:
 
 ```typescript
 import * as vscode from 'vscode';
-import { HarRecorderAPI, HarEntry } from 'harvisualizer-vscode-extension';
+import { HarRecorderAPI, ExtHarEntry } from 'harvisualizer-vscode-extension';
 
 const harvisualizerExt = vscode.extensions.getExtension('murbani.harvisualizer-vscode-extension');
 if (!harvisualizerExt) {
@@ -46,7 +46,7 @@ const handle = api.register('my-extension-id');
 
 The extension ID should be unique to your extension. It will be used to:
 - Create an output channel named `harvisualizer-[your-extension-id]`
-- Organize recorded calls in a dedicated JSONC file
+- Organize recorded calls in a dedicated JSONL file (one JSON entry per line)
 
 **Note**: Registration will throw an error if:
 - The extension ID is empty or invalid
@@ -57,7 +57,7 @@ The extension ID should be unique to your extension. It will be used to:
 Once registered, you can send HAR-formatted call entries:
 
 ```typescript
-const harEntry: HarEntry = {
+const harEntry: ExtHarEntry = {
   startedDateTime: new Date().toISOString(),
   time: 150, // Total request time in milliseconds
   request: {
@@ -93,7 +93,7 @@ const harEntry: HarEntry = {
     headersSize: 150,
     bodySize: 1024
   },
-  cache: {},
+  cache: {}, // Can be any cache data structure
   timings: {
     blocked: 0,
     dns: 10,
@@ -121,7 +121,7 @@ export function deactivate() {
 
 ```typescript
 import * as vscode from 'vscode';
-import { HarRecorderAPI, HarEntry, HarRecorderHandle } from 'harvisualizer-vscode-extension';
+import { HarRecorderAPI, ExtHarEntry, HarRecorderHandle } from 'harvisualizer-vscode-extension';
 
 let harRecorderHandle: HarRecorderHandle | undefined;
 
@@ -214,21 +214,27 @@ Handle returned from registration.
 
 #### Methods
 
-##### `sendCall(entry: HarEntry): void`
+##### `sendCall(entry: ExtHarEntry): void`
 
 Send a HAR call entry to be recorded.
 
 - **Parameters:**
-  - `entry` (HarEntry): HAR-formatted call data
+  - `entry` (ExtHarEntry): HAR-formatted call data
 - **Throws:** Error if the entry is invalid or missing required fields
 
 ##### `dispose(): void`
 
 Dispose of the registration and clean up resources (output channel, etc.).
 
-### `HarEntry`
+### `ExtHarEntry`
 
-Type definition for HAR entry data following the HAR 1.2 specification.
+Type definition for HAR entry data following the HAR 1.2 specification. This is a plain TypeScript interface without external dependencies, designed to be used in the public API.
+
+**Key fields:**
+- All cookies support `sameSite` attribute
+- `cache` field is required (can be any type)
+- `postData` in request can be any type
+- Optional `_resourceType` field for resource classification
 
 See [HAR 1.2 Spec](http://www.softwareishard.com/blog/har-12-spec/) for complete field definitions.
 
@@ -237,12 +243,15 @@ See [HAR 1.2 Spec](http://www.softwareishard.com/blog/har-12-spec/) for complete
 When you send HAR calls using this API:
 
 1. **Output Channel**: Each call is logged to a dedicated output channel named `harvisualizer-[your-extension-id]`
-2. **JSONC Storage**: Calls are persisted to a JSONC file in workspace storage
-3. **Visualization**: Users can view and analyze the recorded calls using the HAR Visualizer interface
+2. **JSONL Storage**: Calls are persisted to a JSONL file (one JSON entry per line) in workspace storage. For file:// URIs, Node.js fs append mode is used for efficient writes.
+3. **Validation**: Incoming entries are validated with Zod schemas before storage
+4. **Visualization**: Users can view and analyze the recorded calls using the HAR Visualizer interface
 
 ## Notes
 
 - The HAR entry format follows the [HAR 1.2 specification](http://www.softwareishard.com/blog/har-12-spec/)
+- The public API uses `ExtHarEntry` (a plain TypeScript interface) to avoid external dependencies
+- Entries are validated with Zod schemas from the har-parser package before storage
 - Multiple extensions can register simultaneously with different extension IDs
-- Each registration gets its own isolated output channel and storage
-- Validation is performed on incoming HAR entries to ensure required fields are present
+- Each registration gets its own isolated output channel and JSONL storage file
+- For file:// URIs, efficient Node.js fs.appendFile is used; for virtual filesystems, VS Code's workspace.fs API is used
